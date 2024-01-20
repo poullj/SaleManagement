@@ -6,3 +6,5 @@
     CONSTRAINT [FK_Store_District] FOREIGN KEY ([DistrictID]) REFERENCES [dbo].[District] ([ID])
 );
 
+
+
