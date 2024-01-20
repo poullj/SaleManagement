@@ -61,6 +61,7 @@
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
     <Folder Include="Scripts" />
+    <Folder Include="dbo\StoredProcedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\DistrictSalesPerson.sql" />
@@ -70,5 +71,8 @@
     <PostDeploy Include="Scripts\PostDeployment.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </PostDeploy>
+    <Build Include="dbo\StoredProcedures\spGetAllDistricts.sql" />
+    <Build Include="dbo\StoredProcedures\spAddSalesPersonToDistrict.sql" />
+    <Build Include="dbo\StoredProcedures\spRemoveSalesPersonFromDistrict.sql" />
   </ItemGroup>
 </Project>

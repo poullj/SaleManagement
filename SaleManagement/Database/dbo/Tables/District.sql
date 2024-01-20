@@ -1,9 +1,9 @@
 ﻿CREATE TABLE [dbo].[District] (
-    [ID]                   INT           IDENTITY (1, 1) NOT NULL,
+    [Id]                   INT           IDENTITY (1, 1) NOT NULL,
     [Name]                 NVARCHAR (50) NOT NULL,
-    [PrimarySalesPersonID] INT           NOT NULL,
-    CONSTRAINT [PK_District] PRIMARY KEY CLUSTERED ([ID] ASC),
-    CONSTRAINT [FK_District_SalesPerson] FOREIGN KEY ([PrimarySalesPersonID]) REFERENCES [dbo].[SalesPerson] ([ID])
+    [PrimarySalesPersonId] INT           NOT NULL,
+    CONSTRAINT [PK_District] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_District_SalesPerson] FOREIGN KEY ([PrimarySalesPersonId]) REFERENCES [dbo].[SalesPerson] ([Id])
 );
 
 
