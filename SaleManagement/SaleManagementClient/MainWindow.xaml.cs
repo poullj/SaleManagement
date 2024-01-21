@@ -25,5 +25,7 @@ namespace SaleManagementWpfClient
             var mainViewModel = new MainViewModel();
             DataContext = mainViewModel;
         }
+
+
     }
 }

@@ -8,9 +8,10 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <StackPanel>
-        <DataGrid x:Name="DistrictGrid"  ItemsSource="{Binding Path=Districts, Mode=OneWay}" />
-        <DataGrid x:Name="SalesPersonGrid" ItemsSource="{Binding ElementName=DistrictGrid, Path=SelectedItem.SalesPersons, Mode=OneWay}" />
+        <DataGrid x:Name="DistrictGrid"  ItemsSource="{Binding Path=Districts, Mode=OneWay}" SelectedItem="{Binding Path=SelectedDistrict}" />
+        <DataGrid x:Name="SalesPersonGrid" ItemsSource="{Binding ElementName=DistrictGrid, Path=SelectedItem.SalesPersons, Mode=OneWay}" SelectedItem="{Binding Path=SelectedSalesPerson}" />
         <DataGrid x:Name="StoreGrid" ItemsSource="{Binding ElementName=DistrictGrid, Path=SelectedItem.Stores, Mode=OneWay}" />
+        <Button x:Name="RemoveButton" Content="Remove Selected SalesPerson" Command="{Binding RemoveSalesPersonCommand}" />
     </StackPanel>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">

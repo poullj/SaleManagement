@@ -15,13 +15,33 @@ namespace SaleManagementWpfClient.ViewModels
     public class MainViewModel : ObservableObject
     {
         private ObservableCollection<DistrictModel> _districts;
+        private DistrictModel _selectedDistrict;
+        private SalesPersonModel _selectedSalesPerson;
 
         public MainViewModel()
         {
 
             MainWindowsLoaded = new AsyncRelayCommand(OnLoaded);
+            RemoveSalesPersonCommand = new AsyncRelayCommand(RemoveSalesPerson, CanRemoveSalesPerson);
         }
 
+        private bool CanRemoveSalesPerson()
+        {
+            return _selectedSalesPerson != null && !_selectedSalesPerson.Primary;
+        }
+
+        private async Task RemoveSalesPerson()
+        {
+            var client = new SaleManagementClient(baseUrl: "http://localhost:5000", new HttpClient());
+            await client.RemoveSalesPersonFromDistrictAsync(new SalesPersonDistrictRequest()
+            {
+                DistrictId = SelectedDistrict.Id,
+                SalesPersonId = SelectedSalesPerson.Id
+            });
+            var districtDtos = await client.GetAsync();
+            Districts = new ObservableCollection<DistrictModel>(districtDtos.Select(x => new DistrictModel(x)));
+
+        }
 
         public ObservableCollection<DistrictModel> Districts 
         { 
@@ -33,7 +53,29 @@ namespace SaleManagementWpfClient.ViewModels
             }
         }
 
+        public DistrictModel SelectedDistrict
+        {
+            get => _selectedDistrict;
+            set
+            {
+                SetProperty(ref _selectedDistrict, value);
+                OnPropertyChanged(nameof(SelectedDistrict));
+            }
+        }
+
+        public SalesPersonModel SelectedSalesPerson
+        {
+            get => _selectedSalesPerson;
+            set
+            {
+                SetProperty(ref _selectedSalesPerson, value);
+                RemoveSalesPersonCommand.NotifyCanExecuteChanged();
+                OnPropertyChanged(nameof(SelectedSalesPerson));
+            }
+        }
+
         public IAsyncRelayCommand MainWindowsLoaded { get; set; }
+        public IAsyncRelayCommand RemoveSalesPersonCommand { get; set; }
 
         public async Task OnLoaded()
         {
