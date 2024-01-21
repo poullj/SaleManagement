@@ -14,7 +14,7 @@ namespace SaleManagementWpfClient.Model
         public DistrictModel(DistrictDTO districtDTO)
         {
             DistrictDTO = districtDTO;
-            _salesPersons = new ObservableCollection<SalesPersonModel>(DistrictDTO.SalesPersons.Select(x=>new SalesPersonModel(x)));
+            _salesPersons = new ObservableCollection<SalesPersonInDistrictModel>(DistrictDTO.SalesPersons.Select(x=>new SalesPersonInDistrictModel(x)));
             _stores = new ObservableCollection<StoreModel>(DistrictDTO.Stores.Select(x => new StoreModel(x)));
         }
 
@@ -37,8 +37,8 @@ namespace SaleManagementWpfClient.Model
             }
         }
 
-        ObservableCollection<SalesPersonModel> _salesPersons;
-        public ObservableCollection<SalesPersonModel> SalesPersons
+        ObservableCollection<SalesPersonInDistrictModel> _salesPersons;
+        public ObservableCollection<SalesPersonInDistrictModel> SalesPersons
         {
             get => _salesPersons;
             set

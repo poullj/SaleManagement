@@ -15,12 +15,12 @@ namespace SaleManagementWpfClient.ViewModels
     public class MainViewModel : ObservableObject
     {
         private ObservableCollection<DistrictModel> _districts;
+        private ObservableCollection<SalesPersonModel> _salesPersons;
         private DistrictModel _selectedDistrict;
-        private SalesPersonModel _selectedSalesPerson;
+        private SalesPersonInDistrictModel _selectedSalesPerson;
 
         public MainViewModel()
         {
-
             MainWindowsLoaded = new AsyncRelayCommand(OnLoaded);
             RemoveSalesPersonCommand = new AsyncRelayCommand(RemoveSalesPerson, CanRemoveSalesPerson);
         }
@@ -32,15 +32,15 @@ namespace SaleManagementWpfClient.ViewModels
 
         private async Task RemoveSalesPerson()
         {
-            var client = new SaleManagementClient(baseUrl: "http://localhost:5000", new HttpClient());
-            await client.RemoveSalesPersonFromDistrictAsync(new SalesPersonDistrictRequest()
+            var salesPersonclient = new SalesPersonClient(baseUrl: "http://localhost:5000", new HttpClient());
+            await salesPersonclient.RemoveSalesPersonFromDistrictAsync(new SalesPersonDistrictRequest()
             {
                 DistrictId = SelectedDistrict.Id,
                 SalesPersonId = SelectedSalesPerson.Id
             });
-            var districtDtos = await client.GetAsync();
+            var districtClient = new DistrictClient(baseUrl: "http://localhost:5000", new HttpClient());
+            var districtDtos = await districtClient.GetAllDistrictsAsync();
             Districts = new ObservableCollection<DistrictModel>(districtDtos.Select(x => new DistrictModel(x)));
-
         }
 
         public ObservableCollection<DistrictModel> Districts 
@@ -50,6 +50,16 @@ namespace SaleManagementWpfClient.ViewModels
             {
                 SetProperty(ref _districts, value);
                 OnPropertyChanged(nameof(Districts));
+            }
+        }
+
+        public ObservableCollection<SalesPersonModel> SalesPersons
+        {
+            get => _salesPersons;
+            set
+            {
+                SetProperty(ref _salesPersons, value);
+                OnPropertyChanged(nameof(SalesPersons));
             }
         }
 
@@ -63,7 +73,7 @@ namespace SaleManagementWpfClient.ViewModels
             }
         }
 
-        public SalesPersonModel SelectedSalesPerson
+        public SalesPersonInDistrictModel SelectedSalesPerson
         {
             get => _selectedSalesPerson;
             set
@@ -79,10 +89,13 @@ namespace SaleManagementWpfClient.ViewModels
 
         public async Task OnLoaded()
         {
-            var client = new SaleManagementClient(baseUrl: "http://localhost:5000", new HttpClient());
-            var districtDtos = await client.GetAsync();
+            var client = new DistrictClient(baseUrl: "http://localhost:5000", new HttpClient());
+            var districtDtos = await client.GetAllDistrictsAsync();
             Districts = new ObservableCollection<DistrictModel>(districtDtos.Select(x => new DistrictModel(x)));
 
+            var salesPersonClient = new SalesPersonClient(baseUrl: "http://localhost:5000", new HttpClient());
+            var salesPersonDtos = await salesPersonClient.GetAllSalesPersonsAsync();
+            SalesPersons = new ObservableCollection<SalesPersonModel>(salesPersonDtos.Select(x => new SalesPersonModel(x)));
         }
     }
 }

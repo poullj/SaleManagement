@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[spRemoveSalesPersonFromDistrict]
-	@SalesPersonID int,
-	@DistrictID int 
+	@SalesPersonId int,
+	@DistrictId int 
 AS
-	DELETE FROM [dbo].[DistrictSalesPerson] where [SalesPersonID] = @SalesPersonID and [DistrictID] = @DistrictID
+	DELETE FROM [dbo].[DistrictSalesPerson] where [SalesPersonId] = @SalesPersonId and [DistrictId] = @DistrictId

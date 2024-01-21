@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Transactions;
 using static System.Formats.Asn1.AsnWriter;
+using static Dapper.SqlMapper;
 
 namespace DataAccessLayer
 {
@@ -23,6 +24,19 @@ namespace DataAccessLayer
         {
             _connectstring = connectstring;
         }
+
+
+        public async Task<List<SalesPersonDTO>> GetAllSalesPersons()
+        {
+            using (SqlConnection dbConnection = new SqlConnection(_connectstring))
+            {
+                dbConnection.Open();
+                using (SqlCommand dbCommand = dbConnection.CreateCommand())
+                {
+                    return (await dbConnection.QueryAsync<SalesPersonDTO>(sql: "dbo.spGetAllSalesPersons", commandType: CommandType.StoredProcedure)).ToList();
+                }
+            }
+         }
 
         public async Task<List<DistrictDTO>> GetAllDistricts()
         {
@@ -81,7 +95,7 @@ namespace DataAccessLayer
                             {   
                                 Id = district.Id, 
                                 Name = district.Name, 
-                                SalesPersons = {new SalesPersonDTO()
+                                SalesPersons = {new SalesPersonInDistrictDTO()
                                 {
                                     Id = salesPerson.Id,
                                     Name = salesPerson.Name,
@@ -101,7 +115,7 @@ namespace DataAccessLayer
                             var salesPersonDto = districtDTOs[districtSalesPerson.DistrictId].SalesPersons.Where(x => x.Id == salesPerson.Id).SingleOrDefault();
                             if (salesPersonDto == null)
                             {
-                                salesPersonDto = new SalesPersonDTO()
+                                salesPersonDto = new SalesPersonInDistrictDTO()
                                 {
                                     Id = salesPerson.Id,
                                     Name = salesPerson.Name,

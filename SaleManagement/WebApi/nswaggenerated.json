@@ -6,12 +6,12 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/SaleManagement": {
+    "/District": {
       "get": {
         "tags": [
-          "SaleManagement"
+          "District"
         ],
-        "operationId": "SaleManagement_Get",
+        "operationId": "District_GetAllDistricts",
         "produces": [
           "text/plain",
           "application/json",
@@ -31,12 +31,37 @@
         }
       }
     },
-    "/SaleManagement/AddSalesPersonToDistrict": {
+    "/SalesPerson": {
+      "get": {
+        "tags": [
+          "SalesPerson"
+        ],
+        "operationId": "SalesPerson_GetAllSalesPersons",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SalesPersonDTO"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/SalesPerson/AddSalesPersonToDistrict": {
       "put": {
         "tags": [
-          "SaleManagement"
+          "SalesPerson"
         ],
-        "operationId": "SaleManagement_AddSalesPersonToDistrict",
+        "operationId": "SalesPerson_AddSalesPersonToDistrict",
         "consumes": [
           "application/json",
           "text/json",
@@ -60,12 +85,12 @@
         }
       }
     },
-    "/SaleManagement/RemoveSalesPersonFromDistrict": {
+    "/SalesPerson/RemoveSalesPersonFromDistrict": {
       "put": {
         "tags": [
-          "SaleManagement"
+          "SalesPerson"
         ],
-        "operationId": "SaleManagement_RemoveSalesPersonFromDistrict",
+        "operationId": "SalesPerson_RemoveSalesPersonFromDistrict",
         "consumes": [
           "application/json",
           "text/json",
@@ -95,7 +120,6 @@
       "type": "object",
       "required": [
         "id",
-        "name",
         "salesPersons",
         "stores"
       ],
@@ -110,7 +134,7 @@
         "salesPersons": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/SalesPersonDTO"
+            "$ref": "#/definitions/SalesPersonInDistrictDTO"
           }
         },
         "stores": {
@@ -121,13 +145,33 @@
         }
       }
     },
+    "SalesPersonInDistrictDTO": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/SalesPersonDTO"
+        },
+        {
+          "type": "object",
+          "required": [
+            "primary",
+            "secondary"
+          ],
+          "properties": {
+            "primary": {
+              "type": "boolean"
+            },
+            "secondary": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    },
     "SalesPersonDTO": {
       "type": "object",
       "required": [
         "id",
-        "name",
-        "primary",
-        "secondary"
+        "name"
       ],
       "properties": {
         "id": {
@@ -136,20 +180,13 @@
         },
         "name": {
           "type": "string"
-        },
-        "primary": {
-          "type": "boolean"
-        },
-        "secondary": {
-          "type": "boolean"
         }
       }
     },
     "StoreDTO": {
       "type": "object",
       "required": [
-        "id",
-        "name"
+        "id"
       ],
       "properties": {
         "id": {

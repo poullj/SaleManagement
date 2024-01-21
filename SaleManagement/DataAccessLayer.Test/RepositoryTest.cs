@@ -86,6 +86,15 @@ namespace DataAccessLayer.Test
         }
 
         [Fact]
+        public async void GetAllSalesPersonTest()
+        {
+            RestoreTestData();
+            Repository repository = new Repository(_connectstring);
+            var all = await repository.GetAllSalesPersons();
+            Assert.Equal(4, all.Count);
+        }
+
+        [Fact]
         public async void RemoveSalesPersonFromDistrictTest()
         {
             RestoreTestData();

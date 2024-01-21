@@ -10,22 +10,23 @@ namespace WebApi.Controllers
 
     [ApiController]
     [Route("[controller]")]
-    public class SaleManagementController : ControllerBase
+    public class SalesPersonController : ControllerBase
     {
         string connectstring { get; set; } = "Data Source=localhost;Initial Catalog=SaleManagement;Integrated Security=True;Encrypt=optional;";
 
-        private readonly ILogger<SaleManagementController> _logger;
+        private readonly ILogger<SalesPersonController> _logger;
         
-        public SaleManagementController(ILogger<SaleManagementController> logger)
+        public SalesPersonController(ILogger<SalesPersonController> logger)
         {
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetAllDistricts")]
-        public async Task<IEnumerable<DistrictDTO>> Get()
+       
+        [HttpGet(Name = "GetAllSalesPersons")]
+        public async Task<IEnumerable<SalesPersonDTO>> GetAllSalesPersons()
         {
             Repository repository = new Repository(connectstring);
-            return await repository.GetAllDistricts();
+            return await repository.GetAllSalesPersons();
         }
 
         [HttpPut("AddSalesPersonToDistrict")]

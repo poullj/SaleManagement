@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[spGetDistrict]
-	@DistrictID int 
+	@DistrictId int 
 AS
-	SELECT [ID], [Name], [PrimarySalesPersonID] FROM [District] WHERE [ID] = @DistrictID
+	SELECT [Id], [Name], [PrimarySalesPersonId] FROM [District] WHERE [Id] = @DistrictId
 

@@ -76,5 +76,6 @@
     <Build Include="dbo\StoredProcedures\spRemoveSalesPersonFromDistrict.sql" />
     <Build Include="dbo\StoredProcedures\spMakeSalesPersonPrimaryInDistrict.sql" />
     <Build Include="dbo\StoredProcedures\spGetDistrict.sql" />
+    <Build Include="dbo\StoredProcedures\spGetAllSalesPersons.sql" />
   </ItemGroup>
 </Project>

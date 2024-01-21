@@ -27,25 +27,10 @@ namespace SaleManagementWpfClient.Model
                 OnPropertyChanged(nameof(Name));
             }
         }
-
-        public bool Primary
+        public override string ToString()
         {
-            get => _salesPersonDTO.Primary;
-            set
-            {
-                _salesPersonDTO.Primary = value;
-                OnPropertyChanged(nameof(Primary));
-            }
+            return Name;
         }
 
-        public bool Secondary
-        {
-            get => _salesPersonDTO.Secondary;
-            set
-            {
-                _salesPersonDTO.Secondary = value;
-                OnPropertyChanged(nameof(Secondary));
-            }
-        }
     }
 }
