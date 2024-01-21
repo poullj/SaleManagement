@@ -16,31 +16,67 @@ namespace SaleManagementWpfClient.ViewModels
     {
         private ObservableCollection<DistrictModel> _districts;
         private ObservableCollection<SalesPersonModel> _salesPersons;
-        private DistrictModel _selectedDistrict;
-        private SalesPersonInDistrictModel _selectedSalesPerson;
+        private DistrictModel? _selectedDistrict;
+        private SalesPersonInDistrictModel? _selectedSalesPersonInDistrict;
+        private SalesPersonModel _selectedSalesPerson;
 
         public MainViewModel()
         {
             MainWindowsLoaded = new AsyncRelayCommand(OnLoaded);
             RemoveSalesPersonCommand = new AsyncRelayCommand(RemoveSalesPerson, CanRemoveSalesPerson);
+            AddSalesPersonCommand = new AsyncRelayCommand(AddSalesPerson, CanAddSalesPerson);
+        }
+
+        private bool CanAddSalesPerson()
+        {
+            return _selectedSalesPerson != null && _selectedDistrict != null && ! _selectedDistrict.SalesPersons.Any(x=>x.Id == _selectedSalesPerson.Id);
+        }
+
+        private async Task AddSalesPerson()
+        {
+            if (SelectedDistrict != null && SelectedSalesPerson != null)
+            {
+                var selectedDistrictId = SelectedDistrict.Id;
+                
+                var salesPersonclient = new SalesPersonClient(baseUrl: "http://localhost:5000", new HttpClient());
+                await salesPersonclient.AddSalesPersonToDistrictAsync(new SalesPersonRolesDistrictRequest()
+                {
+                    DistrictId = SelectedDistrict.Id,
+                    SalesPersonId = SelectedSalesPerson.Id,
+                    Primary = Primary,
+                    Secondary = Secondary,
+                });
+                var districtClient = new DistrictClient(baseUrl: "http://localhost:5000", new HttpClient());
+                var districtDtos = await districtClient.GetAllDistrictsAsync();
+                Districts = new ObservableCollection<DistrictModel>(districtDtos.Select(x => new DistrictModel(x)));
+                SelectedDistrict = Districts.Where(x => x.Id == selectedDistrictId).SingleOrDefault();
+                SelectedSalesPersonInDistrict = SelectedDistrict?.SalesPersons.Where(x => x.Id == SelectedSalesPerson.Id).SingleOrDefault();
+            }
         }
 
         private bool CanRemoveSalesPerson()
         {
-            return _selectedSalesPerson != null && !_selectedSalesPerson.Primary;
+            return _selectedSalesPersonInDistrict != null && !_selectedSalesPersonInDistrict.Primary;
         }
 
         private async Task RemoveSalesPerson()
         {
-            var salesPersonclient = new SalesPersonClient(baseUrl: "http://localhost:5000", new HttpClient());
-            await salesPersonclient.RemoveSalesPersonFromDistrictAsync(new SalesPersonDistrictRequest()
+            if (SelectedDistrict != null && SelectedSalesPersonInDistrict != null)
             {
-                DistrictId = SelectedDistrict.Id,
-                SalesPersonId = SelectedSalesPerson.Id
-            });
-            var districtClient = new DistrictClient(baseUrl: "http://localhost:5000", new HttpClient());
-            var districtDtos = await districtClient.GetAllDistrictsAsync();
-            Districts = new ObservableCollection<DistrictModel>(districtDtos.Select(x => new DistrictModel(x)));
+                var selectedDistrictId = SelectedDistrict.Id;
+                var selectedSalesPersonInDistrictId = SelectedSalesPersonInDistrict.Id;
+                var salesPersonclient = new SalesPersonClient(baseUrl: "http://localhost:5000", new HttpClient());
+                await salesPersonclient.RemoveSalesPersonFromDistrictAsync(new SalesPersonDistrictRequest()
+                {
+                    DistrictId = SelectedDistrict.Id,
+                    SalesPersonId = SelectedSalesPersonInDistrict.Id
+                });
+                var districtClient = new DistrictClient(baseUrl: "http://localhost:5000", new HttpClient());
+                var districtDtos = await districtClient.GetAllDistrictsAsync();
+                Districts = new ObservableCollection<DistrictModel>(districtDtos.Select(x => new DistrictModel(x)));
+                SelectedDistrict = Districts.Where(x => x.Id == selectedDistrictId).SingleOrDefault();
+                SelectedSalesPersonInDistrict = SelectedDistrict?.SalesPersons.Where(x => x.Id == selectedSalesPersonInDistrictId).SingleOrDefault();
+            }
         }
 
         public ObservableCollection<DistrictModel> Districts 
@@ -62,30 +98,68 @@ namespace SaleManagementWpfClient.ViewModels
                 OnPropertyChanged(nameof(SalesPersons));
             }
         }
+        
+        private bool _primary;
+        public bool Primary
+        {
+            get => _primary;
+            set
+            {
+                SetProperty(ref _primary, value);
+                OnPropertyChanged(nameof(Primary));
+            }
+        }
 
-        public DistrictModel SelectedDistrict
+        private bool _secondary;
+        public bool Secondary
+        {
+            get => _secondary;
+            set
+            {
+                SetProperty(ref _secondary, value);
+                OnPropertyChanged(nameof(Secondary));
+            }
+        }
+
+
+        public DistrictModel? SelectedDistrict
         {
             get => _selectedDistrict;
             set
             {
                 SetProperty(ref _selectedDistrict, value);
+                AddSalesPersonCommand.NotifyCanExecuteChanged();
+                RemoveSalesPersonCommand.NotifyCanExecuteChanged();
                 OnPropertyChanged(nameof(SelectedDistrict));
             }
         }
 
-        public SalesPersonInDistrictModel SelectedSalesPerson
+        public SalesPersonInDistrictModel? SelectedSalesPersonInDistrict
+        {
+            get => _selectedSalesPersonInDistrict;
+            set
+            {
+                SetProperty(ref _selectedSalesPersonInDistrict, value);
+                RemoveSalesPersonCommand.NotifyCanExecuteChanged();
+                OnPropertyChanged(nameof(SelectedSalesPersonInDistrict));
+            }
+        }
+
+        public SalesPersonModel SelectedSalesPerson
         {
             get => _selectedSalesPerson;
             set
             {
                 SetProperty(ref _selectedSalesPerson, value);
-                RemoveSalesPersonCommand.NotifyCanExecuteChanged();
+                AddSalesPersonCommand.NotifyCanExecuteChanged();
                 OnPropertyChanged(nameof(SelectedSalesPerson));
             }
         }
 
         public IAsyncRelayCommand MainWindowsLoaded { get; set; }
         public IAsyncRelayCommand RemoveSalesPersonCommand { get; set; }
+
+        public IAsyncRelayCommand AddSalesPersonCommand { get; set; }
 
         public async Task OnLoaded()
         {

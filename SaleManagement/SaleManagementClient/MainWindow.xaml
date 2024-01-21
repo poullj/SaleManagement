@@ -8,10 +8,13 @@
         Title="MainWindow" Height="450" Width="800">
     <StackPanel>
         <DataGrid x:Name="DistrictGrid"  ItemsSource="{Binding Path=Districts, Mode=OneWay}" SelectedItem="{Binding Path=SelectedDistrict}" />
-        <DataGrid x:Name="SalesPersonGrid" ItemsSource="{Binding ElementName=DistrictGrid, Path=SelectedItem.SalesPersons, Mode=OneWay}" SelectedItem="{Binding Path=SelectedSalesPerson}" />
+        <DataGrid x:Name="SalesPersonGrid" ItemsSource="{Binding ElementName=DistrictGrid, Path=SelectedItem.SalesPersons, Mode=OneWay}" SelectedItem="{Binding Path=SelectedSalesPersonInDistrict}" />
         <DataGrid x:Name="StoreGrid" ItemsSource="{Binding ElementName=DistrictGrid, Path=SelectedItem.Stores, Mode=OneWay}" />
         <Button x:Name="RemoveButton" Content="Remove Selected SalesPerson" Command="{Binding RemoveSalesPersonCommand}" />
-        <ListBox x:Name="SalesPersonLb" ItemsSource="{Binding Path=SalesPersons, Mode=OneWay}" />
+        <Button x:Name="AddButton" Content="Add Selected SalesPerson" Command="{Binding AddSalesPersonCommand}" />
+        <ListBox x:Name="SalesPersonLb" ItemsSource="{Binding Path=SalesPersons, Mode=OneWay}"  SelectedItem="{Binding Path=SelectedSalesPerson}"/>
+        <CheckBox Content="Primary"  x:Name="PrimaryCb"  IsChecked="{Binding Path=Primary, Mode=TwoWay}" />
+        <CheckBox Content="Seondary" x:Name="SecondaryCb"  IsChecked="{Binding Path=Secondary, Mode=TwoWay}" />
     </StackPanel>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
