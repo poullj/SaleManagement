@@ -1,0 +1,204 @@
+{
+  "x-generator": "NSwag v14.0.2.0 (NJsonSchema v11.0.0.0 (Newtonsoft.Json v13.0.0.0))",
+  "swagger": "2.0",
+  "info": {
+    "title": "My Title",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/SaleManagement": {
+      "get": {
+        "tags": [
+          "SaleManagement"
+        ],
+        "operationId": "SaleManagement_Get",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DistrictDTO"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/SaleManagement/AddSalesPersonToDistrict": {
+      "put": {
+        "tags": [
+          "SaleManagement"
+        ],
+        "operationId": "SaleManagement_AddSalesPersonToDistrict",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "salesPersonRolesDistrictRequest",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SalesPersonRolesDistrictRequest"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/SaleManagement/RemoveSalesPersonFromDistrict": {
+      "put": {
+        "tags": [
+          "SaleManagement"
+        ],
+        "operationId": "SaleManagement_RemoveSalesPersonFromDistrict",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "salesPersonDistrictRequest",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SalesPersonDistrictRequest"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "DistrictDTO": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "salesPersons",
+        "stores"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "salesPersons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SalesPersonDTO"
+          }
+        },
+        "stores": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StoreDTO"
+          }
+        }
+      }
+    },
+    "SalesPersonDTO": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "primary",
+        "secondary"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "primary": {
+          "type": "boolean"
+        },
+        "secondary": {
+          "type": "boolean"
+        }
+      }
+    },
+    "StoreDTO": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "SalesPersonRolesDistrictRequest": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/SalesPersonDistrictRequest"
+        },
+        {
+          "type": "object",
+          "required": [
+            "primary",
+            "secondary"
+          ],
+          "properties": {
+            "primary": {
+              "type": "boolean"
+            },
+            "secondary": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    },
+    "SalesPersonDistrictRequest": {
+      "type": "object",
+      "required": [
+        "salesPersonId",
+        "districtId"
+      ],
+      "properties": {
+        "salesPersonId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "districtId": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    }
+  }
+}
