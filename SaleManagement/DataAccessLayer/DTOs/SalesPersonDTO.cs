@@ -4,7 +4,8 @@
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public ResponsibilityEnum? Responsibility { get; set; }
+        public bool Primary { get; set; }
+        public bool Secondary { get; set; }
 
     }
 }

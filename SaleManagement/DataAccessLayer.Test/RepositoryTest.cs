@@ -1,4 +1,5 @@
 using Dapper;
+using DataAccessLayer.DatabaseClasses;
 using DataAccessLayer.DTOs;
 using Microsoft.Data.SqlClient;
 
@@ -29,12 +30,20 @@ namespace DataAccessLayer.Test
             var allDistricts = await repository.GetAllDistricts();
 
             Assert.Equal(4, allDistricts.Count);
-            Assert.Equal("Distict1", allDistricts[0].Name);
-            Assert.Equal(1, allDistricts[0].Id);
-            Assert.Equal("Joe", allDistricts[0].SalesPersons[0].Name);
-            Assert.Equal(ResponsibilityEnum.Primary, allDistricts[0].SalesPersons[0].Responsibility);
-            Assert.Equal(ResponsibilityEnum.Secondary, allDistricts[0].SalesPersons[1].Responsibility);
-            Assert.Null(allDistricts[2].SalesPersons[0].Responsibility);
+            var district1 = allDistricts.Where(x => x.Id == 1).Single();
+            Assert.Equal("Distict1", district1.Name);
+            Assert.Equal(1, district1.Id);
+            var primaryInDistrict1 = district1.SalesPersons.Where(x=>x.Id==1).Single();
+            var secondaryInDistrict1 = district1.SalesPersons.Where(x => x.Id == 4).Single();
+            Assert.Equal("Joe", primaryInDistrict1.Name);
+            Assert.True(primaryInDistrict1.Primary);
+            Assert.True(secondaryInDistrict1.Secondary);
+
+            var district3 = allDistricts.Where(x => x.Id == 3).Single();
+            var unAssignedInDistrict3 = district3.SalesPersons.Where(x => x.Id == 3).Single();
+            
+            Assert.False(unAssignedInDistrict3.Primary);
+            Assert.False(unAssignedInDistrict3.Secondary);
         }
 
         [Fact]
@@ -48,27 +57,54 @@ namespace DataAccessLayer.Test
         }
 
         [Fact]
+        public async void UpdateSalesPersonRoleInDistrictTest()
+        {
+            RestoreTestData();
+            Repository repository = new Repository(_connectstring);
+            var allDistricts = await repository.GetAllDistricts();
+            var district = allDistricts[0];
+            var salesPerson = district.SalesPersons.Where(x=>x.Id==4).Single();
+            var primaryInDistrict1 = district.SalesPersons.Where(x => x.Id == 1).Single();
+            Assert.True(primaryInDistrict1.Primary);
+
+            Assert.Equal("Ellen", salesPerson.Name);
+            Assert.False(salesPerson.Primary);
+            Assert.True(salesPerson.Secondary);
+
+            await repository.AddSalesPersonToDistrict(districtId: district.Id, 
+                                                      salesPersonID: salesPerson.Id, primary: true, secondary: false);
+
+            allDistricts = await repository.GetAllDistricts();
+            district = allDistricts[0];
+            var formerPrimaryInDistrict1 = district.SalesPersons.Where(x => x.Id == 1).Single();
+            Assert.False(formerPrimaryInDistrict1.Primary);
+
+            salesPerson = district.SalesPersons.Where(x => x.Id == 4).Single();
+            Assert.Equal("Ellen", salesPerson.Name);
+            Assert.True(salesPerson.Primary);
+            Assert.False(salesPerson.Secondary);
+        }
+
+        [Fact]
         public async void RemoveSalesPersonFromDistrictTest()
         {
             RestoreTestData();
             Repository repository = new Repository(_connectstring);
-            await repository.RemoveSalesPersonFromDistrict(4,4);
+            await repository.RemoveSalesPersonFromDistrict(3,3);
             var allDistricts = await repository.GetAllDistricts();
-            Assert.DoesNotContain(allDistricts[3].SalesPersons, x =>x.Name== "Ellen");
-
+            var district3 = allDistricts.Where(x=>x.Id==3).Single();
+            Assert.DoesNotContain(allDistricts[3].SalesPersons, x=>x.Id==3);
         }
 
-        //// Test exceptions
-        //[Fact]
-        //public void AddSalesPerson_TwoPrimariesTest()
-        //{
-        //    // TODO
-        //}
+               
 
-        //[Fact]
-        //public void RemoveSalesPerson_ZeroPrimariesTest()
-        //{
-        //    // TODO
-        //}
+        //// Test exceptions
+        [Fact]
+        public async void RemoveSalesPerson_ZeroPrimariesTest()
+        {
+            RestoreTestData();
+            Repository repository = new Repository(_connectstring);
+            await Assert.ThrowsAsync<Exception>(async () => await repository.RemoveSalesPersonFromDistrict(4, 4));
+        }
     }
 }

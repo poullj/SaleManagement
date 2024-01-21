@@ -10,6 +10,8 @@ using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Transactions;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace DataAccessLayer
 {
@@ -74,24 +76,44 @@ namespace DataAccessLayer
                         Dictionary<int, DistrictDTO> districtDTOs = new();
                         foreach (var district in districtTemp.Values)
                         {
-                            districtDTOs.Add(district.Id, new DistrictDTO() { Id = district.Id, Name = district.Name });
+                            var salesPerson = salesPersonTemp[district.PrimarySalesPersonId];
+                            var newDistrict = new DistrictDTO() 
+                            {   
+                                Id = district.Id, 
+                                Name = district.Name, 
+                                SalesPersons = {new SalesPersonDTO()
+                                {
+                                    Id = salesPerson.Id,
+                                    Name = salesPerson.Name,
+                                    Primary = true,
+                                    Secondary = false
+                                }}
+                            };
+                            districtDTOs.Add(district.Id, newDistrict);
+
                         }
 
                         foreach (var districtSalesPerson in districtSalesPersonTemp)
                         {
                             var salesPerson = salesPersonTemp[districtSalesPerson.SalesPersonId];
                             var district = districtTemp[districtSalesPerson.DistrictId];
-                            ResponsibilityEnum? responsibility = null;
-                            if (district.PrimarySalesPersonId == districtSalesPerson.SalesPersonId)
-                            {
-                                responsibility = ResponsibilityEnum.Primary;
-                            }
-                            else if (districtSalesPerson.Secondary)
-                            {
-                                responsibility = ResponsibilityEnum.Secondary;
-                            }
 
-                            districtDTOs[districtSalesPerson.DistrictId].SalesPersons.Add(new SalesPersonDTO() { Id = salesPerson.Id, Name = salesPerson.Name, Responsibility = responsibility });
+                            var salesPersonDto = districtDTOs[districtSalesPerson.DistrictId].SalesPersons.Where(x => x.Id == salesPerson.Id).SingleOrDefault();
+                            if (salesPersonDto == null)
+                            {
+                                salesPersonDto = new SalesPersonDTO()
+                                {
+                                    Id = salesPerson.Id,
+                                    Name = salesPerson.Name,
+                                    Primary = false,
+                                    Secondary = districtSalesPerson.Secondary
+                                };
+                                districtDTOs[districtSalesPerson.DistrictId].SalesPersons.Add(salesPersonDto);
+                            }
+                            else
+                            {
+                                salesPersonDto.Secondary = districtSalesPerson.Secondary;
+                            }
                         }
 
                         foreach (var store in storeTemp)
@@ -104,22 +126,40 @@ namespace DataAccessLayer
             }
         }
 
-        public async Task AddSalesPersonToDistrict(int districtId, int salesPersonID, ResponsibilityEnum? responsibility = null)
+        public async Task AddSalesPersonToDistrict(int districtId, int salesPersonID, bool primary=false, bool secondary = false)
         {
             using (SqlConnection dbConnection = new SqlConnection(_connectstring))
             {
-                dbConnection.Open();
-                using (SqlCommand dbCommand = dbConnection.CreateCommand())
+                using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    dbCommand.CommandType = CommandType.StoredProcedure;
+                    dbConnection.Open();
+                    using (SqlCommand dbCommand = dbConnection.CreateCommand())
+                    {
+                        dbCommand.CommandType = CommandType.StoredProcedure;
 
-                    dbCommand.CommandText = "dbo.spAddSalesPersonToDistrict";
+                        dbCommand.CommandText = "dbo.spAddSalesPersonToDistrict";
 
-                    dbCommand.Parameters.AddWithValue("@SalesPersonID", salesPersonID);
-                    dbCommand.Parameters.AddWithValue("@DistrictID", districtId);
-                    dbCommand.Parameters.AddWithValue("@Secondary", responsibility.HasValue && responsibility.Value == ResponsibilityEnum.Secondary);
+                        dbCommand.Parameters.AddWithValue("@SalesPersonID", salesPersonID);
+                        dbCommand.Parameters.AddWithValue("@DistrictID", districtId);
+                        dbCommand.Parameters.AddWithValue("@Secondary", secondary);
 
-                    await dbCommand.ExecuteNonQueryAsync();
+                        await dbCommand.ExecuteNonQueryAsync();
+                    }
+                    if (primary)
+                    {
+                        using (SqlCommand dbCommand = dbConnection.CreateCommand())
+                        {
+                            dbCommand.CommandType = CommandType.StoredProcedure;
+
+                            dbCommand.CommandText = "dbo.spMakeSalesPersonPrimaryInDistrict";
+
+                            dbCommand.Parameters.AddWithValue("@SalesPersonID", salesPersonID);
+                            dbCommand.Parameters.AddWithValue("@DistrictID", districtId);
+
+                            await dbCommand.ExecuteNonQueryAsync();
+                        }
+                    }
+                    scope.Complete();
                 }
             }
         }
@@ -131,6 +171,14 @@ namespace DataAccessLayer
             using (SqlConnection dbConnection = new SqlConnection(_connectstring))
             {
                 dbConnection.Open();
+                var dynamicParameters = new DynamicParameters();
+                dynamicParameters.Add("@DistrictID", districtId);
+                var district = (await dbConnection.QueryAsync<District>(sql: "dbo.spGetDistrict", param: dynamicParameters, commandType: CommandType.StoredProcedure)).Single();
+                if (district.PrimarySalesPersonId == salesPersonID)
+                {
+                    throw new Exception("Cannot remove primary sales person from district - role has to be reassigned before");
+                }
+
                 using (SqlCommand dbCommand = dbConnection.CreateCommand())
                 {
                     dbCommand.CommandType = CommandType.StoredProcedure;
