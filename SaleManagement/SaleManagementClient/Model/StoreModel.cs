@@ -18,7 +18,7 @@ namespace SaleManagementWpfClient.Model
 
         private StoreDTO _storeDTO;
 
-        public StoreDTO StoreDTO { get => _storeDTO; set => _storeDTO = value; }
+        private StoreDTO StoreDTO { get => _storeDTO; set => _storeDTO = value; }
 
         public int Id
         {
@@ -34,6 +34,11 @@ namespace SaleManagementWpfClient.Model
                 OnPropertyChanged(nameof(Name));
             }
         }
-       
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
     }
 }

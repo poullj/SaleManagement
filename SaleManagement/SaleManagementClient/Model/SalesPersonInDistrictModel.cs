@@ -11,7 +11,7 @@ namespace SaleManagementWpfClient.Model
             SalesPersonDTO = salesPersonDTO;
         }
 
-        public SalesPersonInDistrictDTO SalesPersonDTO { get => _salesPersonDTO; set => _salesPersonDTO = value; }
+        private SalesPersonInDistrictDTO SalesPersonDTO { get => _salesPersonDTO; set => _salesPersonDTO = value; }
 
         
         public bool Primary
@@ -32,6 +32,11 @@ namespace SaleManagementWpfClient.Model
                 _salesPersonDTO.Secondary = value;
                 OnPropertyChanged(nameof(Secondary));
             }
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace SaleManagementWpfClient.Model
             SalesPersonDTO = salesPersonDTO;
         }
 
-        public SalesPersonDTO SalesPersonDTO { get => _salesPersonDTO; set => _salesPersonDTO = value; }
+        private SalesPersonDTO SalesPersonDTO { get => _salesPersonDTO; set => _salesPersonDTO = value; }
 
         public int Id
         {

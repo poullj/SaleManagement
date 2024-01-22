@@ -166,10 +166,12 @@ namespace SaleManagementWpfClient.ViewModels
             var client = new DistrictClient(baseUrl: "http://localhost:5000", new HttpClient());
             var districtDtos = await client.GetAllDistrictsAsync();
             Districts = new ObservableCollection<DistrictModel>(districtDtos.Select(x => new DistrictModel(x)));
+            SelectedDistrict = Districts.First();
 
             var salesPersonClient = new SalesPersonClient(baseUrl: "http://localhost:5000", new HttpClient());
             var salesPersonDtos = await salesPersonClient.GetAllSalesPersonsAsync();
             SalesPersons = new ObservableCollection<SalesPersonModel>(salesPersonDtos.Select(x => new SalesPersonModel(x)));
+            
         }
     }
 }

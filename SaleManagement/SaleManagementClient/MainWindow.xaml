@@ -6,16 +6,37 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <StackPanel>
-        <DataGrid x:Name="DistrictGrid"  ItemsSource="{Binding Path=Districts, Mode=OneWay}" SelectedItem="{Binding Path=SelectedDistrict}" />
-        <DataGrid x:Name="SalesPersonGrid" ItemsSource="{Binding ElementName=DistrictGrid, Path=SelectedItem.SalesPersons, Mode=OneWay}" SelectedItem="{Binding Path=SelectedSalesPersonInDistrict}" />
-        <DataGrid x:Name="StoreGrid" ItemsSource="{Binding ElementName=DistrictGrid, Path=SelectedItem.Stores, Mode=OneWay}" />
-        <Button x:Name="RemoveButton" Content="Remove Selected SalesPerson" Command="{Binding RemoveSalesPersonCommand}" />
-        <Button x:Name="AddButton" Content="Add Selected SalesPerson" Command="{Binding AddSalesPersonCommand}" />
-        <ListBox x:Name="SalesPersonLb" ItemsSource="{Binding Path=SalesPersons, Mode=OneWay}"  SelectedItem="{Binding Path=SelectedSalesPerson}"/>
-        <CheckBox Content="Primary"  x:Name="PrimaryCb"  IsChecked="{Binding Path=Primary, Mode=TwoWay}" />
-        <CheckBox Content="Seondary" x:Name="SecondaryCb"  IsChecked="{Binding Path=Secondary, Mode=TwoWay}" />
-    </StackPanel>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0">
+            <Label Content="Districts:" />
+            <DataGrid IsReadOnly="True"  AutoGenerateColumns="False" x:Name="DistrictGrid"  ItemsSource="{Binding Path=Districts, Mode=OneWay}" SelectedItem="{Binding Path=SelectedDistrict}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Id" Width="*" Binding="{Binding Path=Id}" />
+                    <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Path=Name}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <Label Content="Stores:" />
+            <DataGrid IsReadOnly="True" x:Name="StoreGrid" ItemsSource="{Binding ElementName=DistrictGrid, Path=SelectedItem.Stores, Mode=OneWay}" />
+        </StackPanel>
+        
+        <StackPanel Grid.Column="1">
+            <Label Content="Sales persons in districts:" />
+            <DataGrid IsReadOnly="True" x:Name="SalesPersonGrid" ItemsSource="{Binding ElementName=DistrictGrid, Path=SelectedItem.SalesPersons, Mode=OneWay}" SelectedItem="{Binding Path=SelectedSalesPersonInDistrict}" />
+            <Button x:Name="RemoveButton" Content="Remove Selected SalesPerson" Command="{Binding RemoveSalesPersonCommand}" />
+        </StackPanel>
+        <StackPanel Grid.Column="2">
+            <Label Content="All Sales persons:" />
+            <ListBox x:Name="SalesPersonLb" ItemsSource="{Binding Path=SalesPersons, Mode=OneWay}"  SelectedItem="{Binding Path=SelectedSalesPerson}"/>
+            <CheckBox Content="Primary"  x:Name="PrimaryCb"  IsChecked="{Binding Path=Primary, Mode=TwoWay}" />
+            <CheckBox Content="Seondary" x:Name="SecondaryCb"  IsChecked="{Binding Path=Secondary, Mode=TwoWay}" />
+            <Button x:Name="AddButton" Content="Add Selected SalesPerson" Command="{Binding AddSalesPersonCommand}" />
+        </StackPanel>
+    </Grid>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding MainWindowsLoaded}"/>

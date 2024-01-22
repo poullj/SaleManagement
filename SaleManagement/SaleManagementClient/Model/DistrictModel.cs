@@ -20,11 +20,16 @@ namespace SaleManagementWpfClient.Model
 
         private DistrictDTO _districtDTO;
 
-        public DistrictDTO DistrictDTO { get => _districtDTO; set => _districtDTO = value; }
+        private DistrictDTO DistrictDTO { get => _districtDTO; set => _districtDTO = value; }
 
         public int Id
         {
             get => _districtDTO.Id;
+            set
+            {
+                _districtDTO.Id = Id;
+                OnPropertyChanged(nameof(Id));
+            }
         }
 
         public string Name 
@@ -57,6 +62,11 @@ namespace SaleManagementWpfClient.Model
                 SetProperty(ref _stores, value);
                 OnPropertyChanged(nameof(Stores));
             }
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }
