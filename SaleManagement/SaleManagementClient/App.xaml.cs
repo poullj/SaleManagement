@@ -17,6 +17,7 @@ using System.Reflection;
 using SaleManagementWpfClient.Service;
 using WebApi.Client;
 using SaleManagementWpfClient.ViewModels;
+using Shared.Types;
 
 namespace SaleManagementWpfClient
 {

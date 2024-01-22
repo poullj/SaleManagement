@@ -10,20 +10,20 @@ namespace WebApi.Controllers
     [Route("[controller]")]
     public class DistrictController : ControllerBase
     {
-        string connectstring { get; set; } = "Data Source=localhost;Initial Catalog=SaleManagement;Integrated Security=True;Encrypt=optional;";
-
-        private readonly ILogger<DistrictController> _logger;
+        private Repository _repository { get; set; }
         
-        public DistrictController(ILogger<DistrictController> logger)
+        public DistrictController(IConfiguration configuration)
         {
-            _logger = logger;
+            string connectstring = configuration.GetConnectionString("DefaultConnection");
+            _repository = new Repository(connectstring);
         }
+               
+
 
         [HttpGet(Name = "GetAllDistricts")]
         public async Task<IEnumerable<DistrictDTO>> GetAllDistricts()
         {
-            Repository repository = new Repository(connectstring);
-            return await repository.GetAllDistricts();
+            return await _repository.GetAllDistricts();
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SaleManagementWpfClient.Helper
+namespace Shared.Types
 {
     public static class HttpHeaderNames
     {

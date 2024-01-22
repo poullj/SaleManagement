@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SaleManagementWpfClient.Helper;
+using Shared.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;

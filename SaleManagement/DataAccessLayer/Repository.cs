@@ -5,14 +5,11 @@ using Dapper;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Resources;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Transactions;
-using static System.Formats.Asn1.AsnWriter;
 using static Dapper.SqlMapper;
+using Microsoft.Extensions.Configuration;
+using Serilog;
+
 
 namespace DataAccessLayer
 {
@@ -25,9 +22,10 @@ namespace DataAccessLayer
             _connectstring = connectstring;
         }
 
-
+       
         public async Task<List<SalesPersonDTO>> GetAllSalesPersons()
         {
+            Log.Debug("GetAllSalesPersons called");
             using (SqlConnection dbConnection = new SqlConnection(_connectstring))
             {
                 dbConnection.Open();
@@ -40,6 +38,7 @@ namespace DataAccessLayer
 
         public async Task<List<DistrictDTO>> GetAllDistricts()
         {
+            Log.Debug("GetAllDistricts called");
             using (SqlConnection dbConnection = new SqlConnection(_connectstring))
             {
                 dbConnection.Open();
@@ -142,6 +141,7 @@ namespace DataAccessLayer
 
         public async Task AddSalesPersonToDistrict(int districtId, int salesPersonID, bool primary=false, bool secondary = false)
         {
+            Log.Debug("AddSalesPersonToDistrict called");
             using (SqlConnection dbConnection = new SqlConnection(_connectstring))
             {
                 using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -178,10 +178,9 @@ namespace DataAccessLayer
             }
         }
 
-
-
         public async Task RemoveSalesPersonFromDistrict(int districtId, int salesPersonID)
         {
+            Log.Debug("RemoveSalesPersonFromDistrict called");
             using (SqlConnection dbConnection = new SqlConnection(_connectstring))
             {
                 dbConnection.Open();

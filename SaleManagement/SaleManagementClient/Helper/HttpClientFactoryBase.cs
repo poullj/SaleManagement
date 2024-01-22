@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Shared.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;

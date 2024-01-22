@@ -2,6 +2,7 @@ using DataAccessLayer;
 using DataAccessLayer.DTOs;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using WebApi.Request;
 
 namespace WebApi.Controllers
@@ -12,28 +13,27 @@ namespace WebApi.Controllers
     [Route("[controller]")]
     public class SalesPersonController : ControllerBase
     {
-        string connectstring { get; set; } = "Data Source=localhost;Initial Catalog=SaleManagement;Integrated Security=True;Encrypt=optional;";
 
-        private readonly ILogger<SalesPersonController> _logger;
-        
-        public SalesPersonController(ILogger<SalesPersonController> logger)
+        private Repository _repository { get; set; }
+
+
+        public SalesPersonController(IConfiguration configuration)
         {
-            _logger = logger;
+            string connectstring = configuration.GetConnectionString("DefaultConnection");
+            _repository = new Repository(connectstring);
         }
 
        
         [HttpGet(Name = "GetAllSalesPersons")]
         public async Task<IEnumerable<SalesPersonDTO>> GetAllSalesPersons()
         {
-            Repository repository = new Repository(connectstring);
-            return await repository.GetAllSalesPersons();
+            return await _repository.GetAllSalesPersons();
         }
 
         [HttpPut("AddSalesPersonToDistrict")]
         public async Task AddSalesPersonToDistrict([FromBody] SalesPersonRolesDistrictRequest salesPersonRolesDistrictRequest)
         {
-            Repository repository = new Repository(connectstring);
-            await repository.AddSalesPersonToDistrict(salesPersonRolesDistrictRequest.DistrictId,
+            await _repository.AddSalesPersonToDistrict(salesPersonRolesDistrictRequest.DistrictId,
                                                       salesPersonRolesDistrictRequest.SalesPersonId,
                                                       salesPersonRolesDistrictRequest.Primary,
                                                       salesPersonRolesDistrictRequest.Secondary);
@@ -42,8 +42,7 @@ namespace WebApi.Controllers
         [HttpPut("RemoveSalesPersonFromDistrict")]
         public async Task RemoveSalesPersonFromDistrict([FromBody] SalesPersonDistrictRequest salesPersonDistrictRequest)
         {
-            Repository repository = new Repository(connectstring);
-            await repository.RemoveSalesPersonFromDistrict(salesPersonDistrictRequest.DistrictId, salesPersonDistrictRequest.SalesPersonId);
+            await _repository.RemoveSalesPersonFromDistrict(salesPersonDistrictRequest.DistrictId, salesPersonDistrictRequest.SalesPersonId);
         }
     }
 
