@@ -16,15 +16,19 @@ namespace SaleManagementWpfClient.ViewModels
     {
         private ObservableCollection<DistrictModel> _districts;
         private ObservableCollection<SalesPersonModel> _salesPersons;
-        private DistrictModel? _selectedDistrict;
-        private SalesPersonInDistrictModel? _selectedSalesPersonInDistrict;
+        private DistrictModel _selectedDistrict;
+        private SalesPersonInDistrictModel _selectedSalesPersonInDistrict;
         private SalesPersonModel _selectedSalesPerson;
+        private IDistrictClient _districtClient;
+        private ISalesPersonClient _salesPersonClient;
 
-        public MainViewModel()
+        public MainViewModel(IDistrictClient districtClient, ISalesPersonClient salesPersonClient)
         {
             MainWindowsLoaded = new AsyncRelayCommand(OnLoaded);
             RemoveSalesPersonCommand = new AsyncRelayCommand(RemoveSalesPerson, CanRemoveSalesPerson);
             AddSalesPersonCommand = new AsyncRelayCommand(AddSalesPerson, CanAddSalesPerson);
+            _districtClient = districtClient;
+            _salesPersonClient = salesPersonClient;
         }
 
         private bool CanAddSalesPerson()
@@ -46,8 +50,8 @@ namespace SaleManagementWpfClient.ViewModels
                     Primary = Primary,
                     Secondary = Secondary,
                 });
-                var districtClient = new DistrictClient(baseUrl: "http://localhost:5000", new HttpClient());
-                var districtDtos = await districtClient.GetAllDistrictsAsync();
+                
+                var districtDtos = await _districtClient.GetAllDistrictsAsync();
                 Districts = new ObservableCollection<DistrictModel>(districtDtos.Select(x => new DistrictModel(x)));
                 SelectedDistrict = Districts.Where(x => x.Id == selectedDistrictId).SingleOrDefault();
                 SelectedSalesPersonInDistrict = SelectedDistrict?.SalesPersons.Where(x => x.Id == SelectedSalesPerson.Id).SingleOrDefault();
@@ -65,14 +69,14 @@ namespace SaleManagementWpfClient.ViewModels
             {
                 var selectedDistrictId = SelectedDistrict.Id;
                 var selectedSalesPersonInDistrictId = SelectedSalesPersonInDistrict.Id;
-                var salesPersonclient = new SalesPersonClient(baseUrl: "http://localhost:5000", new HttpClient());
-                await salesPersonclient.RemoveSalesPersonFromDistrictAsync(new SalesPersonDistrictRequest()
+                
+                await _salesPersonClient.RemoveSalesPersonFromDistrictAsync(new SalesPersonDistrictRequest()
                 {
                     DistrictId = SelectedDistrict.Id,
                     SalesPersonId = SelectedSalesPersonInDistrict.Id
                 });
-                var districtClient = new DistrictClient(baseUrl: "http://localhost:5000", new HttpClient());
-                var districtDtos = await districtClient.GetAllDistrictsAsync();
+                
+                var districtDtos = await _districtClient.GetAllDistrictsAsync();
                 Districts = new ObservableCollection<DistrictModel>(districtDtos.Select(x => new DistrictModel(x)));
                 SelectedDistrict = Districts.Where(x => x.Id == selectedDistrictId).SingleOrDefault();
                 SelectedSalesPersonInDistrict = SelectedDistrict?.SalesPersons.Where(x => x.Id == selectedSalesPersonInDistrictId).SingleOrDefault();
@@ -122,7 +126,7 @@ namespace SaleManagementWpfClient.ViewModels
         }
 
 
-        public DistrictModel? SelectedDistrict
+        public DistrictModel SelectedDistrict
         {
             get => _selectedDistrict;
             set
@@ -134,7 +138,7 @@ namespace SaleManagementWpfClient.ViewModels
             }
         }
 
-        public SalesPersonInDistrictModel? SelectedSalesPersonInDistrict
+        public SalesPersonInDistrictModel SelectedSalesPersonInDistrict
         {
             get => _selectedSalesPersonInDistrict;
             set
@@ -163,13 +167,12 @@ namespace SaleManagementWpfClient.ViewModels
 
         public async Task OnLoaded()
         {
-            var client = new DistrictClient(baseUrl: "http://localhost:5000", new HttpClient());
-            var districtDtos = await client.GetAllDistrictsAsync();
+            var districtDtos = await _districtClient.GetAllDistrictsAsync();
             Districts = new ObservableCollection<DistrictModel>(districtDtos.Select(x => new DistrictModel(x)));
             SelectedDistrict = Districts.First();
 
-            var salesPersonClient = new SalesPersonClient(baseUrl: "http://localhost:5000", new HttpClient());
-            var salesPersonDtos = await salesPersonClient.GetAllSalesPersonsAsync();
+            
+            var salesPersonDtos = await _salesPersonClient.GetAllSalesPersonsAsync();
             SalesPersons = new ObservableCollection<SalesPersonModel>(salesPersonDtos.Select(x => new SalesPersonModel(x)));
             
         }

@@ -19,13 +19,10 @@ namespace SaleManagementWpfClient
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(MainViewModel mainViewModel)
         {
             InitializeComponent();
-            var mainViewModel = new MainViewModel();
             DataContext = mainViewModel;
         }
-
-
     }
 }
