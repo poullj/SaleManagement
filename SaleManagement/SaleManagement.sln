@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "WebApi\WebApi.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.Client", "WebApi.Client\WebApi.Client.csproj", "{A1B6D7CB-5675-4EBA-8D43-59C2E1F953F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaleManagementWpfClient", "SaleManagementClient\SaleManagementWpfClient.csproj", "{1FB6652C-8D7F-484E-823F-3330A0925CA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaleManagementWpfClient", "SaleManagementClient\SaleManagementWpfClient.csproj", "{1FB6652C-8D7F-484E-823F-3330A0925CA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

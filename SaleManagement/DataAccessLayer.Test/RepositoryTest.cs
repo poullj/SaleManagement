@@ -16,7 +16,6 @@ namespace DataAccessLayer.Test
             {
                 var dbName = connection.Query<string>("SELECT DB_NAME() AS [Current Database]").SingleOrDefault();
                 connection.Query($"alter database {dbName} set single_user with rollback immediate");
-                //connection.Query("USE master");
                 connection.Query($"USE master;RESTORE DATABASE {dbName} FROM DATABASE_SNAPSHOT = '{dbName}_snapshot'");
                 connection.Query($"alter database {dbName} set MULTI_user");
             }
