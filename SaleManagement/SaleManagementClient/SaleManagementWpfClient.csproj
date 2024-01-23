@@ -21,13 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\" />
+    <ProjectReference Include="..\SaleManagementWpfClient.ViewModel\SaleManagementWpfClient.ViewModel.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Shared\Shared.csproj" />
-    <ProjectReference Include="..\WebApi.Client\WebApi.Client.csproj" />
-  </ItemGroup>
+   
 
   <ItemGroup>
     <None Update="appsettings.json">

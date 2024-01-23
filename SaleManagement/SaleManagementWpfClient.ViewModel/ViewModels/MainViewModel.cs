@@ -25,8 +25,8 @@ namespace SaleManagementWpfClient.ViewModels
         public MainViewModel(IDistrictClient districtClient, ISalesPersonClient salesPersonClient)
         {
             MainWindowsLoaded = new AsyncRelayCommand(OnLoaded);
-            RemoveSalesPersonCommand = new AsyncRelayCommand(RemoveSalesPerson, CanRemoveSalesPerson);
-            AddSalesPersonCommand = new AsyncRelayCommand(AddSalesPerson, CanAddSalesPerson);
+            RemoveSalesPersonCommand = new AsyncRelayCommand(RemoveSelectedSalesPersonInDistrict, CanRemoveSalesPerson);
+            AddSalesPersonCommand = new AsyncRelayCommand(AddSelectedSalesPerson, CanAddSalesPerson);
             _districtClient = districtClient;
             _salesPersonClient = salesPersonClient;
         }
@@ -36,14 +36,13 @@ namespace SaleManagementWpfClient.ViewModels
             return _selectedSalesPerson != null && _selectedDistrict != null && ! _selectedDistrict.SalesPersons.Any(x=>x.Id == _selectedSalesPerson.Id);
         }
 
-        private async Task AddSalesPerson()
+        private async Task AddSelectedSalesPerson()
         {
             if (SelectedDistrict != null && SelectedSalesPerson != null)
             {
                 var selectedDistrictId = SelectedDistrict.Id;
                 
-                var salesPersonclient = new SalesPersonClient(baseUrl: "http://localhost:5000", new HttpClient());
-                await salesPersonclient.AddSalesPersonToDistrictAsync(new SalesPersonRolesDistrictRequest()
+                await _salesPersonClient.AddSalesPersonToDistrictAsync(new SalesPersonRolesDistrictRequest()
                 {
                     DistrictId = SelectedDistrict.Id,
                     SalesPersonId = SelectedSalesPerson.Id,
@@ -63,7 +62,7 @@ namespace SaleManagementWpfClient.ViewModels
             return _selectedSalesPersonInDistrict != null && !_selectedSalesPersonInDistrict.Primary;
         }
 
-        private async Task RemoveSalesPerson()
+        private async Task RemoveSelectedSalesPersonInDistrict()
         {
             if (SelectedDistrict != null && SelectedSalesPersonInDistrict != null)
             {

@@ -13,7 +13,7 @@ using Serilog;
 
 namespace DataAccessLayer
 {
-    public class Repository
+    public class Repository : IRepository
     {
         private string _connectstring;
 
@@ -22,7 +22,7 @@ namespace DataAccessLayer
             _connectstring = connectstring;
         }
 
-       
+
         public async Task<List<SalesPersonDTO>> GetAllSalesPersons()
         {
             Log.Debug("GetAllSalesPersons called");
@@ -34,7 +34,7 @@ namespace DataAccessLayer
                     return (await dbConnection.QueryAsync<SalesPersonDTO>(sql: "dbo.spGetAllSalesPersons", commandType: CommandType.StoredProcedure)).ToList();
                 }
             }
-         }
+        }
 
         public async Task<List<DistrictDTO>> GetAllDistricts()
         {
@@ -90,10 +90,10 @@ namespace DataAccessLayer
                         foreach (var district in districtTemp.Values)
                         {
                             var salesPerson = salesPersonTemp[district.PrimarySalesPersonId];
-                            var newDistrict = new DistrictDTO() 
-                            {   
-                                Id = district.Id, 
-                                Name = district.Name, 
+                            var newDistrict = new DistrictDTO()
+                            {
+                                Id = district.Id,
+                                Name = district.Name,
                                 SalesPersons = {new SalesPersonInDistrictDTO()
                                 {
                                     Id = salesPerson.Id,
@@ -139,7 +139,7 @@ namespace DataAccessLayer
             }
         }
 
-        public async Task AddSalesPersonToDistrict(int districtId, int salesPersonID, bool primary=false, bool secondary = false)
+        public async Task AddSalesPersonToDistrict(int districtId, int salesPersonID, bool primary = false, bool secondary = false)
         {
             Log.Debug("AddSalesPersonToDistrict called");
             using (SqlConnection dbConnection = new SqlConnection(_connectstring))
@@ -200,7 +200,7 @@ namespace DataAccessLayer
 
                     dbCommand.Parameters.AddWithValue("@SalesPersonID", salesPersonID);
                     dbCommand.Parameters.AddWithValue("@DistrictID", districtId);
-                    
+
                     await dbCommand.ExecuteNonQueryAsync();
                 }
             }

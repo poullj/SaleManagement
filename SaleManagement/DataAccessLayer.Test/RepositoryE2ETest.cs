@@ -5,7 +5,7 @@ using Microsoft.Data.SqlClient;
 
 namespace DataAccessLayer.Test
 {
-    public class RepositoryTest
+    public class RepositoryE2ETest
     {
 
         string _connectstring = "Data Source=localhost;Initial Catalog=SaleManagement2;Integrated Security=True;Encrypt=optional;";
