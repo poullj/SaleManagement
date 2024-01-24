@@ -38,7 +38,7 @@ namespace DataAccessLayer
 
         public async Task<List<DistrictDTO>> GetAllDistricts()
         {
-            Log.Debug("GetAllDistricts called");
+            Log.Debug("Repository.GetAllDistricts called");
             using (SqlConnection dbConnection = new SqlConnection(_connectstring))
             {
                 dbConnection.Open();
@@ -141,7 +141,7 @@ namespace DataAccessLayer
 
         public async Task AddSalesPersonToDistrict(int districtId, int salesPersonID, bool primary = false, bool secondary = false)
         {
-            Log.Debug("AddSalesPersonToDistrict called");
+            Log.Debug("Repository.AddSalesPersonToDistrict called");
             using (SqlConnection dbConnection = new SqlConnection(_connectstring))
             {
                 using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -180,7 +180,7 @@ namespace DataAccessLayer
 
         public async Task RemoveSalesPersonFromDistrict(int districtId, int salesPersonID)
         {
-            Log.Debug("RemoveSalesPersonFromDistrict called");
+            Log.Debug("Repository.RemoveSalesPersonFromDistrict called");
             using (SqlConnection dbConnection = new SqlConnection(_connectstring))
             {
                 dbConnection.Open();

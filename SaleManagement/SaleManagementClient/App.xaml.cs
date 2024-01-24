@@ -18,6 +18,7 @@ using SaleManagementWpfClient.Service;
 using WebApi.Client;
 using SaleManagementWpfClient.ViewModels;
 using Shared.Types;
+using System.Windows.Threading;
 
 namespace SaleManagementWpfClient
 {
@@ -31,7 +32,10 @@ namespace SaleManagementWpfClient
         public App()
         {
             SessionId = Guid.NewGuid().ToString();
-
+            
+            AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
+            Current.DispatcherUnhandledException += OnDispatcherUnhandledException;
+            TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
             ExceptionOutlet.ExceptionOutletEvent += ExceptionOutlet_ExceptionOutletEvent;
 
             IConfigurationRoot config = new ConfigurationBuilder()
@@ -68,6 +72,31 @@ namespace SaleManagementWpfClient
             Ioc.Default.ConfigureServices(host.Services);
         }
 
+        #region ExceptionsHandlers
+        /// <summary>
+        /// Handles an exception on an async task of the application.
+        /// </summary>
+        private void OnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            // TODO: Show message of system error - contact the system responsible
+        }
+
+        /// <summary>
+        /// Handles an exception on any other thread of the application.
+        /// </summary>
+        private void OnAppDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            // TODO: Show message of system error - contact the system responsible
+        }
+
+        /// <summary>
+        /// Handles an exception on the UI thread of the application.
+        /// </summary>
+        private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            // TODO: Show message of system error - contact the system responsible
+        }
+
         private void ExceptionOutlet_ExceptionOutletEvent(bool expectedException, ApiException apiException)
         {
            
@@ -80,6 +109,7 @@ namespace SaleManagementWpfClient
                 // TODO: Show message of system error - contact the system responsible
             }
         }
+        #endregion
 
         private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {

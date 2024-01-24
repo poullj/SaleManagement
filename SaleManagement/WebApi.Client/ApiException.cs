@@ -45,7 +45,7 @@ namespace WebApi.Client
             StatusCode = statusCode;
             Headers = headers;
             UserInformed = false;
-            ExceptionOutlet.Throw(statusCode == (int)HttpStatusCode.BadRequest, this);
+            ExceptionOutlet.PreThrow(statusCode == (int)HttpStatusCode.BadRequest, this);
         }
 
         public override string ToString()
