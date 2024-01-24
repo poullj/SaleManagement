@@ -32,6 +32,7 @@ namespace SaleManagementWpfClient
         {
             SessionId = Guid.NewGuid().ToString();
 
+            ExceptionOutlet.ExceptionOutletEvent += ExceptionOutlet_ExceptionOutletEvent;
 
             IConfigurationRoot config = new ConfigurationBuilder()
                    .SetBasePath(Directory.GetCurrentDirectory())
@@ -65,6 +66,19 @@ namespace SaleManagementWpfClient
                 })
                 .Build();
             Ioc.Default.ConfigureServices(host.Services);
+        }
+
+        private void ExceptionOutlet_ExceptionOutletEvent(bool expectedException, ApiException apiException)
+        {
+           
+           if (expectedException)
+           {
+                // TODO: Show user friendly message of expected exception
+           }
+           else
+           {
+                // TODO: Show message of system error - contact the system responsible
+            }
         }
 
         private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
